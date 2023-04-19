@@ -5,10 +5,11 @@ import bcrypt
 
 from pydantic import BaseModel, ValidationError
 from typing import Union, Dict, Any
+from typing_extensions import Annotated
 from fastapi import FastAPI, Request, Body, HTTPException, status, Depends
 from price_change import PriceChange
 from user_action import UserAction
-from models import models
+from data_models.models import find_client_model
 from database.mongo import MongoDB
 from pprint import pprint
 from fastapi.encoders import jsonable_encoder
@@ -34,9 +35,9 @@ class Item(BaseModel):
 def check_client(data: ClientLoginSchema):
     return db.collection("clients").find_one({'email': data.email, 'password': hash_password(data.password)})
 
-@app.get("/")
+@app.get("/", dependencies=[Depends(JWTBearer())])
 def read_root():
-    return {"Hello": "World"}
+    return {"Hello": 'Worl'}
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
@@ -67,7 +68,7 @@ async def client_login(login: ClientLoginSchema = Body(...)):
 @app.post("/log/{collection}", dependencies=[Depends(JWTBearer())], tags=["Logging"])
 def store_log(collection: str, item: Dict[str, Any] = Body(...)):
     try:
-        model = models.get(collection)
+        model = find_client_model(collection)
 
         if model == None:
             raise HTTPException(status_code=404, detail=f"Collection {collection} not found")

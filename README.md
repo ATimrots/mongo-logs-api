@@ -1,6 +1,6 @@
 ![main workflow](https://github.com/mongodb-developer/pymongo-fastapi-crud/actions/workflows/main.yml/badge.svg)
 
-# Audit logging API
+# Audit logs API
 
 API to communicate audit logs between source of logs and Mongo database. Based on Python PyMongo and FastAPI.
 
