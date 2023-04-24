@@ -2,7 +2,7 @@ import sys
 sys.path.append('/var/www/mongo-log-api/data_models/')
 
 import bcrypt
-
+from bson.json_util import dumps
 from pydantic import BaseModel, ValidationError
 from typing import Union, Dict, Any
 from typing_extensions import Annotated
@@ -82,3 +82,20 @@ def store_log(collection: str, item: Dict[str, Any] = Body(...)):
     result = db.collection(collection).insert_one(jsonable_encoder(item))
 
     return {"message": "_id: {doc_id}".format(doc_id=result.inserted_id)}
+
+@app.get("/get/{collection}", dependencies=[Depends(JWTBearer())], tags=["Logging"])
+def logs(collection: str, q: Union[str, None] = None, page: Union[int, None] = None, limit: Union[int, None] = None):
+    total = None
+
+    if page and limit:
+        total = db.collection(collection).count_documents({})
+
+        pprint(total)
+        result = db.collection(collection).find({}).skip(limit*(page-1)).limit(limit)
+    else:
+        result = db.collection(collection).find({}).limit(2000)
+
+    result = list(result)
+    result = dumps(result)
+
+    return {"result": result, "page": page, "limit": limit, "total": total}

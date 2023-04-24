@@ -19,7 +19,7 @@ def signJWT(id: str, rep: str, permission: str):
         "_id": id,
         "repository": rep,
         "permission": permission,
-        "expires": time.time() + 86400 # 24h
+        "expires": time.time() + 86400#  86400 = 24h
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 

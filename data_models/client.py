@@ -14,9 +14,9 @@ class ClientSchema(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "company": "Student 1",
+                "company": "Student",
                 "repository": "student",
-                "email": "student1@student.com",
+                "email": "student@student.com",
                 "password": "weakpassword",
                 "permission": "rw",
                 "active": 1
