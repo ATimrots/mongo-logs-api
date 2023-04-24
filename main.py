@@ -1,7 +1,7 @@
 import sys
 sys.path.append('/var/www/mongo-log-api/data_models/')
-
 import bcrypt
+import bson
 from bson.json_util import dumps
 from pydantic import BaseModel, ValidationError
 from typing import Union, Dict, Any
@@ -23,6 +23,8 @@ from auth.auth_bearer import JWTBearer
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from decouple import config
 
+from urllib.parse import parse_qs
+
 app = FastAPI()
 
 db = MongoDB()
@@ -34,6 +36,14 @@ class Item(BaseModel):
 
 def check_client(data: ClientLoginSchema):
     return db.collection("clients").find_one({'email': data.email, 'password': hash_password(data.password)})
+
+def make_query(q: Dict):
+    keys = q.keys()
+
+    if "_id" in keys:
+      q["_id"] = bson.ObjectId(q["_id"])
+
+    return q
 
 @app.get("/", dependencies=[Depends(JWTBearer())])
 def read_root():
@@ -83,17 +93,12 @@ def store_log(collection: str, item: Dict[str, Any] = Body(...)):
 
     return {"message": "_id: {doc_id}".format(doc_id=result.inserted_id)}
 
-@app.get("/get/{collection}", dependencies=[Depends(JWTBearer())], tags=["Logging"])
-def logs(collection: str, q: Union[str, None] = None, page: Union[int, None] = None, limit: Union[int, None] = None):
+@app.post("/select/{collection}", dependencies=[Depends(JWTBearer())], tags=["Logging"])
+def logs(collection: str, page: Union[int, None] = 1, limit: Union[int, None] = 2000, q: Dict[str, Any] = Body(...)):
     total = None
 
-    if page and limit:
-        total = db.collection(collection).count_documents({})
-
-        pprint(total)
-        result = db.collection(collection).find({}).skip(limit*(page-1)).limit(limit)
-    else:
-        result = db.collection(collection).find({}).limit(2000)
+    total = db.collection(collection).count_documents(q)
+    result = db.collection(collection).find(q).skip(limit*(page-1)).limit(limit)
 
     result = list(result)
     result = dumps(result)
