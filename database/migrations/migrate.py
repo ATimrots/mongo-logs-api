@@ -74,8 +74,6 @@ class Migration:
         }
     }
 
-    repositories =
-
     def __init__(self):
         mongo = MongoDB()
         self.db = mongo.db()

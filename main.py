@@ -63,7 +63,7 @@ async def client_login(login: ClientLoginSchema = Body(...)):
         permission = client["permission"]
 
         return signJWT(id, repository, permission)
-    return {"error": "Wrong login details!"}
+    raise HTTPException(status_code=401, detail="Wrong login details!")
 
 @app.post("/log/{collection}", dependencies=[Depends(JWTBearer())], tags=["Logging"])
 def store_log(collection: str, item: Dict[str, Any] = Body(...)):
