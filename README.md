@@ -32,22 +32,22 @@ Here is example of `clients` schema settings:
 ```json
 {
 	"clients": {
-		'schema': {
-			'$jsonSchema': {
-				'bsonType': 'object',
-				'required': ['company', 'repository', 'email', 'password', 'permission', 'active'],
-				'properties': {
-					"company": {'type': 'string'},
-					"repository": {'type': 'string'},
-					"email": {'type': 'string'},
-					"password": {'type': 'string'},
-					"permission": {'type': 'string'},
-					"active": {'type': 'boolean'}
+		"schema": {
+			"$jsonSchema": {
+				"bsonType": "object",
+				"required": ["company", "repository", "email", "password", "permission", "active"],
+				"properties": {
+					"company": {"type": "string"},
+					"repository": {"type": "string"},
+					"email": {"type": "string"},
+					"password": {"type": "string"},
+					"permission": {"type": "string"},
+					"active": {"type": "boolean"}
 				}
 			}
 		},
-		'indexes': {
-			'unique': [[("repository", ASCENDING), ("email", ASCENDING)]]
+		"indexes": {
+			"unique": [[("repository", ASCENDING), ("email", ASCENDING)]]
 		}
 	}
 }
