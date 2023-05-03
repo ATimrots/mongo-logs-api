@@ -27,6 +27,11 @@ uvicorn main:app --reload
 
 When the application starts, navigate to `http://localhost:8000/docs` and try out the endpoints.
 
+### Set up clients
+
+
+
+
 ## Disclaimer
 
 Use at your own risk; not a supported MongoDB product

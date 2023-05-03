@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/var/www/mongo-log-api/data_models/')
+sys.path.append('/var/www/mongo-logs-api/data_models/')
 import bcrypt
 import bson
 from bson.json_util import dumps
@@ -13,26 +13,17 @@ from data_models.models import find_client_model
 from database.mongo import MongoDB
 from pprint import pprint
 from fastapi.encoders import jsonable_encoder
-
 from pymongo.errors import DuplicateKeyError
-
 from client import ClientSchema, ClientLoginSchema
 from auth.auth_handler import signJWT, decodeJWT, hash_password
 from auth.auth_bearer import JWTBearer
-
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from decouple import config
-
 from urllib.parse import parse_qs
 
 app = FastAPI()
 
 db = MongoDB()
-
-class Item(BaseModel):
-    name: str
-    price: float
-    is_offer: Union[bool, None] = None
 
 def check_client(data: ClientLoginSchema):
     return db.collection("clients").find_one({'email': data.email, 'password': hash_password(data.password)})
@@ -45,23 +36,7 @@ def make_query(q: Dict):
 
     return q
 
-@app.get("/", dependencies=[Depends(JWTBearer())])
-def read_root():
-    return {"Hello": 'Worl'}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-@app.post("/client/signup", tags=["Client"])
-async def create_client(client: ClientSchema = Body(...)):
-    client.password = hash_password(client.password)
-
-    try:
-        result = db.collection("clients").insert_one(jsonable_encoder(client))
-        return {"message": "Client created _id: {doc_id}".format(doc_id=result.inserted_id)}
-    except DuplicateKeyError as e:
-        raise HTTPException(status_code=409, detail=str(e))
+# Routes
 
 @app.post("/client/login", tags=["Client"])
 async def client_login(login: ClientLoginSchema = Body(...)):

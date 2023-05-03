@@ -1,10 +1,13 @@
+import sys
+sys.path.append('/var/www/mongo-logs-api/data_models/')
+
 import time
 import bcrypt
 import jwt
 from typing import Dict
 from decouple import config
 from pprint import pprint
-from data_models.client import ClientSchema
+from client import ClientSchema
 
 JWT_SECRET = config("secret")
 JWT_ALGORITHM = config("algorithm")

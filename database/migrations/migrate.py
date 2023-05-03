@@ -1,12 +1,18 @@
+from sys import exit, path
+path.append('../../')
+path.append("..")
 import bson
 from pymongo import MongoClient, ASCENDING
+from pydantic import ValidationError
+from fastapi import HTTPException
+from data_models.client import ClientSchema
 from pprint import pprint
 from datetime import datetime
-from sys import exit, path
+from auth.auth_handler import hash_password
 import argparse
-
-path.append("..")
-
+import getpass
+from pymongo.errors import DuplicateKeyError
+from fastapi.encoders import jsonable_encoder
 from mongo import MongoDB
 
 class Migration:
@@ -122,9 +128,55 @@ class Migration:
 
         print("Done!")
 
+    def create_client(self):
+        print('\033[97m'+'Create new client')
+
+        # Request parameters one by one
+        company = input('\033[93m'+"Enter company: ")
+        repository = input("Enter repository: ")
+        email = input("Enter email: ")
+        password = getpass.getpass("Enter password: ")
+        permission = input("Enter permission: ")
+        active = input("Is client active? [1]:") or 1
+
+        print('\033[92m'+"----------- Entered data -----------")
+        print('\033[92m'+'company: '+'\033[96m', company)
+        print('\033[92m'+'repository: '+'\033[96m', repository)
+        print('\033[92m'+'email: '+'\033[96m', email)
+        print('\033[92m'+'permission: '+'\033[96m', permission)
+        print('\033[92m'+'active: '+'\033[96m', active)
+
+        confirm = input('\033[97m'+"Do You confirm this data? [yes]/no:") or 'yes'
+
+        if confirm != 'yes':
+            print('\033[91m'+'Client creation canceled!')
+            exit(0)
+
+        data = {
+            "company": company,
+            "repository": repository,
+            "email": email,
+            "password": hash_password(password),
+            "permission": permission,
+            "active": bool(active)
+        }
+
+        try:
+            client = ClientSchema(**data)
+        except ValidationError as e:
+            # Return a 422 Unprocessable Entity response if the request data is invalid
+            print('\033[91m'+'Validation error: {error}'.format(error=str(e)))
+            exit(0)
+
+        try:
+            result = self.db["clients"].insert_one(jsonable_encoder(data))
+            print('\033[92m'+'Client succesfully created!')
+        except DuplicateKeyError as e:
+            raise HTTPException(status_code=409, detail=str(e))
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', nargs='?', choices=['up', 'down'], help='up or down')
+    parser.add_argument('action', nargs='?', choices=['up', 'down', 'client'], help='up/down/client')
     args = parser.parse_args()
     action = args.action
 
@@ -134,5 +186,7 @@ if __name__ == "__main__":
         migration.up()
     elif action == 'down':
         migration.down()
+    elif action == 'client':
+        migration.create_client()
     else:
-        print("One of the action arguments required, choose up or down!\n[Example] python migrate.py up")
+        print("One of the action arguments required, choose up, down or client!\n[Example] python migrate.py up")
