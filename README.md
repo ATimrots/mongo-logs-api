@@ -29,7 +29,7 @@ This command will create system base collections, like `clients`, and also will 
 to be defined in Migration class. You can specify schemas for specific database collections. 
 Here is example of `clients` schema settings:
 
-```json
+```
 {
 	"clients": {
 		"schema": {
