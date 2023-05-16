@@ -6,20 +6,14 @@ from sys import exit
 from decouple import config
 
 class MongoDB:
-    DB_HOST=config("db_host")
-    DB_PORT=config("db_port")
-    DB_USERNAME=config("db_username")
-    DB_PASSWORD=config("db_password")
-    DB_DATABASE=config("db_database")
-
     def __init__(self):
-        # self.client = MongoClient(
-        #     MongoDB.DB_HOST,
-        #     int(MongoDB.DB_PORT),
-        #     username=MongoDB.DB_USERNAME,
-        #     password=MongoDB.DB_PASSWORD,
-        #     authSource=MongoDB.DB_DATABASE,
-        #     authMechanism='SCRAM-SHA-1')
+        self.client = MongoClient(
+            MongoDB.DB_HOST,
+            int(MongoDB.DB_PORT),
+            username=MongoDB.DB_USERNAME,
+            password=MongoDB.DB_PASSWORD,
+            authSource=MongoDB.DB_DATABASE,
+            authMechanism='SCRAM-SHA-1')
 
         self.client = MongoClient(
             MongoDB.DB_HOST,
