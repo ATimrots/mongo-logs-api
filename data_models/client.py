@@ -1,5 +1,13 @@
 import sys
-sys.path.append('/var/www/mongo-logs-api/enums/')
+import os
+
+def root_path():
+    path = os.path.dirname(os.path.abspath(__file__))
+    split_path = path.split("mongo-logs-api/")
+    return split_path[0] + "mongo-logs-api/"
+
+sys.path.append(root_path() + 'enums/')
+
 from permission import Permission
 from pydantic import BaseModel, Field, EmailStr
 

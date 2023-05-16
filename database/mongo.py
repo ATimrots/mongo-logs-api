@@ -13,13 +13,17 @@ class MongoDB:
     DB_DATABASE=config("db_database")
 
     def __init__(self):
+        # self.client = MongoClient(
+        #     MongoDB.DB_HOST,
+        #     int(MongoDB.DB_PORT),
+        #     username=MongoDB.DB_USERNAME,
+        #     password=MongoDB.DB_PASSWORD,
+        #     authSource=MongoDB.DB_DATABASE,
+        #     authMechanism='SCRAM-SHA-1')
+
         self.client = MongoClient(
             MongoDB.DB_HOST,
-            int(MongoDB.DB_PORT),
-            username=MongoDB.DB_USERNAME,
-            password=MongoDB.DB_PASSWORD,
-            authSource=MongoDB.DB_DATABASE,
-            authMechanism='SCRAM-SHA-1')
+            int(MongoDB.DB_PORT))
 
         # self.readWrite = MongoClient('0.0.0.0', 27017, username='auditor', password='auditor', authSource='audit', authMechanism='SCRAM-SHA-1')
         # self.read = MongoClient('0.0.0.0', 27017, username='auditor', password='auditor', authSource='audit', authMechanism='SCRAM-SHA-1')

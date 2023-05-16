@@ -1,14 +1,24 @@
 from sys import exit, path
-path.append('../../')
-path.append("..")
+import os
+
+def root_path():
+    path = os.path.dirname(os.path.abspath(__file__))
+    split_path = path.split("mongo-logs-api/")
+
+    return split_path[0] + "mongo-logs-api/"
+
+path.append(root_path() + 'data_models/')
+path.append(root_path() + 'auth/')
+path.append(root_path() + 'database/')
+
 import bson
 from pymongo import MongoClient, ASCENDING
 from pydantic import ValidationError
 from fastapi import HTTPException
-from data_models.client import ClientSchema
+from client import ClientSchema
 from pprint import pprint
 from datetime import datetime
-from auth.auth_handler import hash_password
+from auth_handler import hash_password
 import argparse
 import getpass
 from pymongo.errors import DuplicateKeyError
@@ -105,7 +115,7 @@ class Migration:
             print("Created the collection '{col}'.".format(col=col))
 
             for field in settings["indexes"]["unique"]:
-                db[col].create_index(field, unique=True)
+                self.db[col].create_index(field, unique=True)
 
         print("Done!")
 

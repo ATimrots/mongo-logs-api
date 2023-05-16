@@ -1,5 +1,13 @@
 import sys
-sys.path.append('/var/www/mongo-logs-api/data_models/')
+import os
+
+def root_path():
+    path = os.path.dirname(os.path.abspath(__file__))
+    split_path = path.split("mongo-logs-api/")
+    return split_path[0] + "mongo-logs-api/"
+
+sys.path.append('data_models/')
+
 import bcrypt
 import bson
 from bson.json_util import dumps
