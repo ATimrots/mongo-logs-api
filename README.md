@@ -60,7 +60,7 @@ If you want to cancel setup, execute command:
 python database/migrations/migrate.py down
 
 ```
-To use API admin need to create client. Claint can be created with command (You will be promt to enter client's data):
+To use API, admin must create a client. Claint can be created with command (You will be promt to enter client's data):
 ```
 python database/migrations/migrate.py client
 ```
